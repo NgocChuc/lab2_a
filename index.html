@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chính</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+
+        body, html {
+            height: 100%; /* Đặt chiều cao cho body và html */
+            margin: 0;
+            font-family: Arial;
+            transition: margin-left 0.3s; /* Hiệu ứng chuyển động cho body */
+        }
+
+        /* Container cho các tab */
+        .tab-container {
+            display: flex;
+            justify-content: space-between; /* Căn giữa các tab */
+            overflow-x: auto; /* Thêm thanh cuộn nếu cần */
+            white-space: nowrap; /* Ngăn cách các tab tràn ra dòng khác */
+        }
+
+        /* Style tab links */
+        .tablink {
+            background-color: #C0C0C0;
+            color: black;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            font-size: 17px;
+            flex: 1; /* Cho phép tab chiếm không gian đồng đều */
+            min-width: 120px; /* Đặt chiều rộng tối thiểu cho mỗi tab */
+        }
+
+        .tablink:hover {
+            background-color: #999;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            color: black;
+            display: none;
+            padding: 60px 20px;
+            height: 100%;
+            margin-top: -20px;
+        }
+
+       .sub-tab {
+    width: 150px;
+    height: 150px;
+    background-color: #C0C0C0;
+    margin: 10px 5px; /* Thêm margin trên dưới và bên trái, bên phải */
+    display: inline-block;
+    text-align: center;
+    line-height: 150px;
+    cursor: pointer;
+    border-radius: 10%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+
+.sub-tab:hover {
+    background-color: #999;
+    transform: translateY(-5px); /* Di chuyển lên 5px */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Hiệu ứng bóng */
+}
+
+
+        /* Modal styles */
+        /* Modal */
+.modal {
+    display: none; /* Ẩn modal mặc định */
+    position: fixed; /* Đặt modal ở vị trí cố định */
+    z-index: 1; /* Nằm trên các phần tử khác */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Màu nền */
+    background-color: rgba(0,0,0,0.4); /* Màu nền mờ */
+  
+}
+
+/* Nội dung modal */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% từ trên và căn giữa */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%; /* Chiều rộng của modal */
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Hiệu ứng chiều sâu */
+}
+
+/* Nút đóng */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+        .sidebar {
+            width: 60px; /* Chiều rộng khi menu đóng */
+            height: 100vh; /* Chiều cao của sidebar */
+            background-color: #333; /* Màu nền của sidebar */
+            color: white; /* Màu chữ */
+            transition: width 0.3s; /* Hiệu ứng chuyển động cho chiều rộng */
+            overflow: hidden; /* Ẩn overflow */
+            position: fixed; /* Đặt sidebar ở vị trí cố định */
+            z-index: 1000; /* Đảm bảo sidebar nằm trên các phần tử khác */
+            top: 0; /* Đặt trên cùng */
+            left: 0; /* Đặt bên trái */
+        }
+
+        .sidebar.open {
+            width: 200px; /* Chiều rộng khi mở menu */
+        }
+
+        body {
+            margin-left: 60px; /* Căn lề cho body, tạo không gian cho sidebar khi đóng */
+            transition: margin-left 0.3s; /* Thêm hiệu ứng cho body */
+        }
+
+        .menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu li {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer; /* Hiển thị con trỏ như bàn tay khi hover */
+            transition: background-color 0.3s; /* Hiệu ứng chuyển nền mượt mà */
+        }
+
+        .menu-item {
+            margin-left: 10px; /* Khoảng cách giữa icon và tên */
+            display: none; /* Ẩn tên ở trạng thái mặc định */
+        }
+
+        .sidebar.open .menu-item {
+            display: inline; /* Hiện tên khi mở menu */
+        }
+
+        .sub-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: none; /* Ẩn sub-menu */
+        }
+
+        .sub-menu li {
+            padding: 10px 30px; /* Thêm khoảng cách cho sub-menu */
+            background-color: #4F4F4F; /* Màu nền cho sub-menu */
+            transition: background-color 0.3s; /* Hiệu ứng chuyển nền mượt mà cho sub-menu */
+        }
+
+        .sub-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Màu nền mờ cho sub-menu khi hover */
+        }
+
+        .icon {
+            font-size: 20px; /* Kích thước biểu tượng */
+            transition: color 0.3s; /* Hiệu ứng chuyển màu cho biểu tượng */
+        }
+
+        .icon:hover {
+            color: #FFDD57; /* Thay đổi màu biểu tượng khi hover */
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            margin: 5px; /* Thêm khoảng cách cho nút */
+            position: relative; /* Để tạo hiệu ứng vòng tròn */
+            padding: 10px; /* Thêm padding cho nút */
+            transition: color 0.1s; /* Thêm hiệu ứng chuyển màu */
+        }
+
+        .toggle-btn:hover {
+            color: #FFFFFF; /* Thay đổi màu chữ khi hover */
+        }
+
+        .toggle-btn:hover::before {
+            content: '';
+            position: absolute;
+            top: 50%; /* Đặt giữa theo chiều dọc */
+            left: 50%; /* Đặt giữa theo chiều ngang */
+            width: 50px; /* Đặt kích thước cho vòng tròn */
+            height: 50px; /* Đặt kích thước cho vòng tròn */
+            border-radius: 50%; /* Tạo hình tròn */
+            background: rgba(255, 255, 255, 0.2); /* Màu trắng mờ */
+            transform: translate(-50%, -50%); /* Đưa nó về giữa nút */
+            transition: background 0.3s; /* Thêm hiệu ứng chuyển động mượt mà */
+        }
+
+        .menu li:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Màu nền mờ khi hover */
+        }
+        /* Nút "Làm Bài" */
+#btn-do-lab {
+    background-color: #4F4F4F; /* Màu nền của nút */
+    color: white; /* Màu chữ */
+    border: none; /* Không có viền */
+    padding: 10px 20px; /* Padding */
+    text-align: center; /* Căn giữa chữ */
+    text-decoration: none; /* Không gạch chân */
+    display: inline-block; /* Hiển thị như một khối inline */
+    font-size: 16px; /* Kích thước chữ */
+    border-radius: 5px; /* Bo tròn các góc */
+    cursor: pointer; /* Con trỏ chuột */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển đổi màu nền */
+}
+
+#btn-do-lab:hover {
+    background-color: #C0C0C0; /* Màu nền khi hover */
+}
+
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <button class="toggle-btn" id="toggleButton" onclick="toggleMenu()">&#9776;</button>
+    <ul class="menu">
+        <li onclick="toggleExercises(event)">
+            <i class="icon fa fa-book"></i><span class="menu-item">Bài Tập</span>
+        </li>
+        <ul class="sub-menu" id="exercisesMenu">
+            <li onclick="alert('Bài tập 1')">Bài Tập Java</li>
+            <li onclick="alert('Bài tập 2')">Bài Tập C</li>
+            <li onclick="alert('Bài tập 3')">Bài Tập Python</li>
+        </ul>
+        <li onclick="handleLogout(event)">
+            <i class="icon fas fa-sign-out-alt"></i><span class="menu-item">Đăng Xuất</span>
+        </li>
+    </ul>
+</div>
+
+<!-- Tabs chính -->
+<div class="tab-container">
+    <button class="tablink" onclick="openPage('bt_java', this, '#C0C0C0')">Bài Tập Java</button>
+    <button class="tablink" onclick="openPage('bt_python', this, '#C0C0C0')" id="defaultOpen">Bài Tập Python</button>
+    <button class="tablink" onclick="openPage('bt_c', this, '#C0C0C0')">Bài Tập C</button>
+</div>
+
+<!-- Nội dung tab chính -->
+<div id="bt_java" class="tabcontent">
+     
+    <!-- Tabs nhỏ bên trong -->
+    <div class="sub-tab" onclick="openModal('lab1')">Lab 1</div>
+    <div class="sub-tab" onclick="openModal('lab2')">Lab 2</div>
+    <div class="sub-tab" onclick="openModal('lab3')">Lab 3</div>
+</div>
+
+<div id="bt_python" class="tabcontent">
+     <!-- Tabs nhỏ bên trong -->
+    <div class="sub-tab" onclick="openModal('lab1')">Lab 1</div>
+    <div class="sub-tab" onclick="openModal('lab3')">Lab 3</div>
+</div>
+
+<div id="bt_c" class="tabcontent">
+    <!-- Tabs nhỏ bên trong -->
+    <div class="sub-tab" onclick="openModal('lab1')">Lab 1</div>
+    <div class="sub-tab" onclick="openModal('lab2')">Lab 2</div>
+    <div class="sub-tab" onclick="openModal('lab3')">Lab 3</div>
+    <div class="sub-tab" onclick="openModal('lab3')">Lab 4</div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-info"></p>
+        <button id="btn-do-lab" onclick="doLab()" >Làm Bài</button> <!-- Nút "Làm Bài" -->
+    </div>
+</div>
+
+
+<script>
+function openModal(labId) {
+    const modal = document.getElementById("myModal");
+    const title = document.getElementById("modal-title");
+    const info = document.getElementById("modal-info");
+
+    let labInfo;
+
+    // Cung cấp thông tin cho từng lab
+    switch (labId) {
+        case 'lab1':
+            labInfo = {
+                title: "Lab 1",
+                difficulty: "Dễ",
+                time: "", // Để trống
+                status: "" // Để trống
+            };
+            break;
+        case 'lab2':
+            labInfo = {
+                title: "Lab 2",
+                difficulty: "Trung bình",
+                time: "", // Để trống
+                status: "" // Để trống
+            };
+            break;
+        case 'lab3':
+            labInfo = {
+                title: "Lab 3",
+                difficulty: "Khó",
+                time: "", // Để trống
+                status: "" // Để trống
+            };
+            break;
+        case 'lab4':
+            labInfo = {
+                title: "Lab 4",
+                difficulty: "Dễ",
+                time: "", // Để trống
+                status: "" // Để trống
+            };
+            break;
+        default:
+            labInfo = {
+                title: "Không tìm thấy lab",
+                difficulty: "",
+                time: "",
+                status: ""
+            };
+    }
+
+    // Cập nhật tiêu đề và thông tin
+    title.textContent = labInfo.title;
+    info.innerHTML = `Độ khó: ${labInfo.difficulty}<br>Thời gian: ${labInfo.time || ""}<br>Tình trạng: ${labInfo.status || "Chưa làm"}`;
+
+    modal.style.display = "block"; // Hiển thị modal
+}
+
+function closeModal() {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "none"; // Ẩn modal
+}
+
+    function openPage(pageName, elmnt, color) {
+        // Ẩn tất cả nội dung tab
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";  
+        }
+
+        // Xóa màu nền cho tất cả tab
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.backgroundColor = ""; 
+        }
+
+        // Hiện tab đang được chọn và thay đổi màu nền
+        document.getElementById(pageName).style.display = "block";  
+        elmnt.style.backgroundColor = color; 
+    }
+
+    // Đặt tab mặc định
+    document.getElementById("defaultOpen").click();
+function toggleMenu() {
+    const sidebar = document.getElementById("sidebar");
+    const body = document.body;
+    const exercisesMenu = document.getElementById("exercisesMenu"); // Tham chiếu đến menu bài tập
+
+    sidebar.classList.toggle("open");
+    body.style.marginLeft = sidebar.classList.contains("open") ? "200px" : "60px"; // Căn lề cho body
+
+    // Đóng menu bài tập nếu sidebar bị đóng
+    if (!sidebar.classList.contains("open")) {
+        exercisesMenu.style.display = "none"; // Ẩn sub-menu khi sidebar đóng
+    }
+}
+
+
+
+    function toggleExercises(event) {
+        event.stopPropagation(); // Ngăn chặn sự kiện click lan rộng
+        const exercisesMenu = document.getElementById("exercisesMenu");
+        exercisesMenu.style.display = exercisesMenu.style.display === "block" ? "none" : "block"; // Hiện/Ẩn sub-menu
+    }
+
+    function handleLogout(event) {
+        alert("Đăng Xuất thành công!"); // Thực hiện đăng xuất
+    }
+
+    function closeModal() {
+        document.getElementById("myModal").style.display = "none"; // Đóng modal
+    }
+
+    // Đóng modal khi nhấp ra ngoài
+    window.onclick = function(event) {
+        if (event.target === document.getElementById("myModal")) {
+            closeModal();
+        }
+    };
+    
+</script>
+
+</body>
+</html>
